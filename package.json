@@ -1,0 +1,32 @@
+{
+  "name": "Sebastion",
+  "description": "An interactive UI dashboard for Ocypod",
+  "main": "index.js",
+  "author": "Joseph Persie <persie.joseph@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.2",
+    "express-handlebars": "^3.0.0",
+    "handlebars": "^4.0.10",
+    "handlebars-helpers": "^0.8.2",
+    "lodash": "^4.17.4",
+    "nodemon": "^1.11.0",
+    "bluebird": "^3.5.0",
+    "cron-parser": "^2.4.1",
+    "debuglog": "^1.0.0",
+    "ioredis": "^3.1.4",
+    "lodash": "^4.17.4",
+    "semver": "^5.4.1",
+    "uuid": "^3.1.0"
+  },
+  "scripts": {
+    "start": "nohup nodemon index.js </dev/null &",
+    "inspect": "nodemon --inspect --trace-warnings index.js"
+  },
+  "engines": {
+    "node": ">=7.6.0"
+  },
+  "repository": "https://github.com/nidhhoggr/sebastion.git",
+  "version": "0.1.0"
+}
