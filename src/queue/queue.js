@@ -190,8 +190,13 @@ Queue.prototype.disconnect = function(){
   });
 };
 
-Queue.prototype.toKey = function(queueType){
-  return [this.keyPrefix, "queue", this.name].join(':');
+Queue.prototype.toKey = function(postfix){
+  if (postfix) {
+    return [this.keyPrefix, "queue", this.name, postfix].join(':');
+  }
+  else {
+    return [this.keyPrefix, "queue", this.name].join(':');
+  }
 };
 
 

@@ -8,7 +8,7 @@ async function handler(req, res) {
   const queue = await Queues.get(queueName, queueHost);
   if (!queue) return res.status(404).render('dashboard/templates/queueNotFound', {queueName, queueHost});
 
-  let jobTypes = ['queued', 'running', 'completed', 'failed', 'timedout'];
+  let jobTypes = ['queued', 'running', 'completed', 'failed', 'timedout', 'ended'];
   
   if (!_.includes(jobTypes, state)) return res.status(400).render('dashboard/templates/jobStateNotFound', {queueName, queueHost, state});
 
@@ -21,6 +21,12 @@ async function handler(req, res) {
   const endId = startId + pageSize - 1;
 
   let jobs = await queue[`get${_.capitalize(state)}`](startId, endId);
+
+  console.log({
+    jobCounts,
+    jobs,
+    state
+  });
 
   let pages = _.range(page - 6, page + 7)
     .filter((page) => page >= 1);

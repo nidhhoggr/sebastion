@@ -1,7 +1,3 @@
-/*eslint-env node */
-'use strict';
-
-var Promise = require('bluebird');
 var _ = require('lodash');
 var utils = require('./utils');
 var debuglog = require('debuglog')('jimmy');
@@ -75,11 +71,10 @@ Job.prototype.retry = function(){
   */
 };
 
-//It will loop through each of the states until it's returned otherwise returns stuck
+//It will loop through each of the states until it's returned otherwise returns onknown
 Job.prototype.getState = function() {
-  var _this = this;
-
-  var fns = [
+ 
+  const fns = [
     { fn: 'isQueued', state: 'queued' },
     { fn: 'isRunning', state: 'running' },
     { fn: 'isCompleted', state: 'completed' },
@@ -89,15 +84,14 @@ Job.prototype.getState = function() {
     { fn: 'isEnded', state: 'ended' },
   ];
 
-  return Promise.reduce(fns, function(state, fn) {
+  return Promise.reduce(fns, (state, fn) => {
     if(state){
       return state;
     }
-    console.log(fn);
-    return _this[fn.fn]().then(function(result) {
+    return this[fn.fn]().then((result) => {
       return result ? fn.state : null;
     });
-  }, null).then(function(result) {
+  }, null).then((result) => {
     return result ? result : 'unknown';
   });
 };
@@ -157,6 +151,15 @@ Job.prototype.isCancelled = function(){
   return new Promise((resolve) => {
     this.getField("status").then((r) => {
       resolve(r === "cancelled");
+    });
+  });
+};
+
+
+Job.prototype.belongsToQueue = function(queueName) {
+  return new Promise((resolve) => {
+    this.getField("queue").then((r) => {
+      resolve(r === queueName);
     });
   });
 };

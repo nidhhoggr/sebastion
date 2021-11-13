@@ -7,47 +7,16 @@ var Job = require('./job');
 module.exports = function(Queue){
  
   Queue.prototype.toPrefixedKey = function(queueType){
+    if (queueType === "queued") {
+      return this.keys["jobs"];
+    }
+    else {
       return [this.keyPrefix, queueType].join(':');
+    }
   };
 
   Queue.prototype.getJob = function(jobId){
     return Job.fromId(this, jobId);
-  };
-
-  Queue.prototype._commandByType = function(types, count, callback) {
-    var _this = this;
-
-    return _.map(types, function(type) {
-      
-      var key = _this.toPrefixedKey(type);
-      //the following lists are maintained in jimmy
-      //limbo ( used to keep jobs in the transition state between `queued` and `running`)
-      //running
-      //failed
-      //timedout
-      //ended (contains failed and timedout and compltedkeys)
-      //completed
-      switch(type) {
-        //case 'queued':
-        case 'limbo':
-        case 'running':
-        case 'failed':
-        case 'timedout':
-        case 'completed':
-        case 'ended':
-          return callback(key, count ? 'llen' : 'lrange');
-      }
-    });
-  };
-
-  /**
-    Returns the number of jobs queued to be processed.
-  */
-  Queue.prototype.count = function(){
-    //the number of jobs to be processed will simply be those either timedout our queued but not running. This mean everything inside of ended
-    //that would be the equivelant of intersecting queue:jobs and ended
-    //and then subtracting that from queue:jobs
-    return this.getJobCountByTypes('wait', 'paused', 'delayed');
   };
 
   // Job counts by type
@@ -56,7 +25,7 @@ module.exports = function(Queue){
   // Queue#getJobCountByTypes('completed', 'failed') => completed + failed count
   // Queue#getJobCountByTypes('completed,queued', 'failed') => completed + queued + failed count
   Queue.prototype.getJobCountByTypes = function() {
-    return this.getJobCounts.apply(this, arguments).then(function(result){
+    return this.getJobCounts.apply(this, arguments).then((result) => {
       return _.chain(result).values().sum().value();
     });
   };
@@ -66,30 +35,36 @@ module.exports = function(Queue){
    *
    */
   Queue.prototype.getJobCounts = function(){
-    var multi = this.client.multi();
+    const multi = this.client.multi();
     var types = parseTypeArg(arguments);//exa value: [ 'queued', 'running', 'completed', 'failed', 'timedout', 'ended' ]
-    this._commandByType(types, true, function(key, command){
-      console.log("HERE", key, command);
-      multi[command](key);
+    _.map(types, (type) => {
+      const key = this.toPrefixedKey(type);
+      multi["lrange"](key, 0, -1);
     });
-
-    return multi.exec().then(function(res){
+    return multi.exec().then((res) => {
       var counts = {};
-      res.forEach(function(res, index){
-        counts[types[index]] = res[1] || 0;
+      console.log(res);
+      res.forEach((res, index) => {
+        const queueType = types[index];
+        counts[queueType] = 0;
+        const jobIds = res[1];
+        jobIds.forEach(async (jobId) => {
+          const job = await this.getJob(jobId);
+          const belongs = await job.belongsToQueue(this.name);
+          console.log("JOBS", queueType, job.id, belongs);
+          if (belongs) {
+            counts[queueType]++;
+          }
+        });
       });
       return counts;
     });
   };
 
-/**
-  case 'limbo':
-  case 'running':
-  case 'failed':
-  case 'timedout':
-  case 'completed':
-  case 'ended':
-*/
+  Queue.prototype.getQueuedCount = function() {
+    return this.getJobCountByTypes('queued');
+  };
+
   Queue.prototype.getRunningCount = function() {
     return this.getJobCountByTypes('running');
   };
@@ -110,12 +85,9 @@ module.exports = function(Queue){
     return this.getJobCountByTypes('ended');
   };
 
-  Queue.prototype.getQueuedCount = function() {
-    console.log("TODO");
-  };
 
   Queue.prototype.getQueued = function(start, end){
-    console.log("TODO");
+    return this.getJobs('queued', start, end, false);
   };
 
   Queue.prototype.getRunning = function(start, end){
@@ -147,34 +119,31 @@ module.exports = function(Queue){
   };
 
   Queue.prototype.getRanges = function(types, start, end, asc){
-    var _this = this;
 
     start = _.isUndefined(start) ? 0 : start;
     end = _.isUndefined(end) ? -1 : end;
 
-    var resultByType = _this._commandByType(parseTypeArg(types), false, function(key, command){
-      switch(command){
-        case 'lrange':
-          if(asc){
-            return _this.client.lrange(key, -(end + 1), -(start + 1)).then(function(result){
-              return result.reverse();
-            });
-          }else{
-            return _this.client.lrange(key, start, end);
-          }
+    const resultByType = _.map(parseTypeArg(types), (type) => {
+      const key = this.toPrefixedKey(type);
+      if(asc){
+        return this.client.lrange(key, -(end + 1), -(start + 1)).then((result) => result.reverse());
+      }
+      else{
+        return this.client.lrange(key, start, end);
       }
     });
 
-    return Promise.all(resultByType).then(function(results){
+    return Promise.all(resultByType).then((results) =>{
       return _.flatten(results);
     });
   };
 
   Queue.prototype.getJobs = function(types, start, end, asc){
-    var _this = this;
-    return this.getRanges(types, start, end, asc).then(function(jobIds){
-      return Promise.all(jobIds.map((j) => {
-        return _this.getJob(j);
+    return this.getRanges(types, start, end, asc).then((jobIds) => {
+      return Promise.all(jobIds.map(async (j) => {
+        const job = await this.getJob(j);
+        const belongs = await job.belongsToQueue(this.name);
+        if (belongs) return job;
       }));
     });
   };
