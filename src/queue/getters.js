@@ -20,7 +20,7 @@ module.exports = function(Queue){
     return _.map(types, function(type) {
       
       var key = _this.toPrefixedKey(type);
-      //the following lists are maintained in ocypod
+      //the following lists are maintained in jimmy
       //limbo ( used to keep jobs in the transition state between `queued` and `running`)
       //running
       //failed

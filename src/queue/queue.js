@@ -53,7 +53,7 @@ var Queue = function Queue(name, url, opts){
     }
   });
 
-  this.keyPrefix = opts.redis.keyPrefix || opts.prefix || 'ocypod';
+  this.keyPrefix = opts.redis.keyPrefix || opts.prefix || 'jimmy';
 
   //
   // We cannot use ioredis keyPrefix feature since we

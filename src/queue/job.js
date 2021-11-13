@@ -50,7 +50,7 @@ Job.prototype.toJSON = function(){
     output: this.output,//contains any information the client working on this job decides to store here, this might include the job's result, progress information, partial results, etc. - it can be set anytime the task is running
     timeout: this.timeout,//maximum execution time of the job before it's marked as timed out
     heartbeat_timeout: this.heartbeat_timeout,//maximum time without receiving a heartbeat before the job is marked as timed out
-    expires_after: this.expires_after,// amount of time this job metadata will persist in Ocypod after the job reaches a final state (i.e. completed/failed/timed_out with no retries remaining)
+    expires_after: this.expires_after,// amount of time this job metadata will persist in Jimmy after the job reaches a final state (i.e. completed/failed/timed_out with no retries remaining)
     retries: this.retries,//number of times this job will automatically be requeued on failure
     retries_attempted: this.retries_attempted,//number of times this job has failed and been requeued
     retry_delays: this.retry_delays,//minimum amount of time to wait between each retry attempt

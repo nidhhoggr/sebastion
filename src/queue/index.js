@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const Jimmy = require('./../jimmy/queue');
+const Jimmy = require('./queue');
 const path = require('path');
 
 class Queues {
