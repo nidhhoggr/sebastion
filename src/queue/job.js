@@ -84,16 +84,14 @@ Job.prototype.getState = function() {
     { fn: 'isEnded', state: 'ended' },
   ];
 
-  return Promise.reduce(fns, (state, fn) => {
+  return _.reduce(fns, (state, fn) => {
     if(state){
       return state;
     }
     return this[fn.fn]().then((result) => {
       return result ? fn.state : null;
     });
-  }, null).then((result) => {
-    return result ? result : 'unknown';
-  });
+  }, Promise.resolve([]));
 };
 
 Job.prototype.remove = function(){

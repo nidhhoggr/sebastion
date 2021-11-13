@@ -12,7 +12,6 @@
     "handlebars-helpers": "^0.8.2",
     "lodash": "^4.17.4",
     "nodemon": "^1.11.0",
-    "bluebird": "^3.5.0",
     "cron-parser": "^2.4.1",
     "debuglog": "^1.0.0",
     "ioredis": "^3.1.4",
