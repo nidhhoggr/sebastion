@@ -34,6 +34,7 @@ class Queues {
     const { type, name, port, host, db, password, prefix, url } = queueConfig;
 
     const options = {
+      client_url: this.client_url(), 
       prefix,
       redis: url || { port, host, db, password }
     };
@@ -46,7 +47,7 @@ class Queues {
     return queue;
   }
 
-  client_url(path) {
+  client_url(path = "") {
     const {host, port} = this._config.client;
     return `http://${host}:${port}/${path}`;
   }

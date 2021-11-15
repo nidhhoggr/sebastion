@@ -47,7 +47,6 @@ const Queue = function Queue(name, url, opts){
   });
 
   this.keyPrefix = opts.redis.keyPrefix || opts.prefix || 'jimmy';
-
   //
   // We cannot use ioredis keyPrefix feature since we
   // create keys dynamically in lua scripts.
@@ -63,21 +62,9 @@ const Queue = function Queue(name, url, opts){
   });
 
   Object.defineProperties(this, {
-    //
-    // Queue client (used to add jobs, pause queues, etc);
-    //
     client: {
       get: lazyClient('client')
     },
-    //
-    // Event subscriber client (receive messages from other instance of the queue)
-    //
-    eclient: {
-      get: lazyClient('subscriber')
-    },
-    bclient: {
-      get: lazyClient('bclient')
-    }
   });
 
   if (opts.skipVersionCheck !== true) {
@@ -94,6 +81,7 @@ const Queue = function Queue(name, url, opts){
   this.handlers = {};
 
   this.settings = opts.settings;
+  this.client_url = opts.client_url;
   this.keys = {};
   
   _.each([

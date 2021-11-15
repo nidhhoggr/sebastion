@@ -1,8 +1,9 @@
-var _ = require('lodash');
-var utils = require('./utils');
-var debuglog = require('debuglog')('jimmy');
+const _ = require('lodash');
+const utils = require('./utils');
+const debuglog = require('debuglog')('jimmy');
+const fetch = require('node-fetch');
 
-var Job = function(queue, input){
+const Job = function(queue, input){
   this.queue = queue;
   this.input = input;
   this.toKey = function(jobId) {
@@ -55,20 +56,11 @@ Job.prototype.toJSON = function(){
 };
 
 Job.prototype.retry = function(){
-  console.log("TO BE IMPLEMENTED");
-  /*
-  return scripts.reprocessJob(this, { state: 'failed' }).then(function(result) {
-    if (result === 1) {
-      return;
-    } else if (result === 0) {
-      throw new Error(errors.Messages.RETRY_JOB_NOT_EXIST);
-    } else if (result === -1) {
-      throw new Error(errors.Messages.RETRY_JOB_IS_LOCKED);
-    } else if (result === -2) {
-      throw new Error(errors.Messages.RETRY_JOB_NOT_FAILED);
-    }
-  });
-  */
+  return fetch(`${this.queue.client_url}job/${this.id}/retry`, {method: "PUT"})
+    .then(async (resp) => {
+      const json = await resp.json();
+      return json;
+    });
 };
 
 //It will loop through each of the states until it's returned otherwise returns onknown

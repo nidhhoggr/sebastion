@@ -25,9 +25,22 @@ const helpers = {
         block = blocks[name] || (blocks[name] = []);
     block.push(options.fn(this));
   },
-  
+ 
   encodeIdAttr: function (id) {
-      return id && id.replace(/:| /g, "");
+    return id && id.replace(/:| /g, "");
+  },
+
+  includes(str, substring, options) {
+    console.log({str, substring});
+    var len = substring.length;
+    var pos = 0;
+    var n = 0;
+
+    while ((pos = str.indexOf(substring, pos)) > -1) {
+      n++;
+      pos += len;
+    }
+    return (n > 0) ? options.fn(this) : options.inverse(this);
   }
 };
 
