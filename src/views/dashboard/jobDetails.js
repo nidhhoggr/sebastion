@@ -18,7 +18,6 @@ async function handler(req, res) {
   }
 
   let jobState = await job.getState();
-  console.log(jobState);
 
   return res.render('dashboard/templates/jobDetails', {
     queueName,

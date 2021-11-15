@@ -43,7 +43,6 @@ module.exports = function(Queue){
     });
     return multi.exec().then((res) => {
       var counts = {};
-      console.log(res);
       res.forEach((res, index) => {
         const queueType = types[index];
         counts[queueType] = 0;
@@ -51,7 +50,6 @@ module.exports = function(Queue){
         jobIds.forEach(async (jobId) => {
           const job = await this.getJob(jobId);
           const belongs = await job.belongsToQueue(this.name);
-          console.log("JOBS", queueType, job.id, belongs);
           if (belongs) {
             counts[queueType]++;
           }

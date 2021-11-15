@@ -13,8 +13,6 @@ async function handler(req, res) {
   
   const stats = await QueueHelpers.getStats(queue);
 
-  console.log({jobCounts, stats});
-
   return res.render('dashboard/templates/queueDetails', {
     queueName,
     queueHost,

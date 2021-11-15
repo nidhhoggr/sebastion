@@ -31,7 +31,6 @@ const helpers = {
   },
 
   includes(str, substring, options) {
-    console.log({str, substring});
     var len = substring.length;
     var pos = 0;
     var n = 0;

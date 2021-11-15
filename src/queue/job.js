@@ -63,6 +63,23 @@ Job.prototype.retry = function(){
     });
 };
 
+Job.prototype.remove = function(){
+  return fetch(`${this.queue.client_url}job/${this.id}`, {method: "DELETE"})
+};
+
+
+Job.prototype.cancel = function(){
+  return fetch(`${this.queue.client_url}job/${this.id}`, {method: "PATCH", body: JSON.stringify({"status":"cancelled"})})
+};
+
+Job.prototype.fail = function(){
+  return fetch(`${this.queue.client_url}job/${this.id}`, {method: "PATCH", body: JSON.stringify({"status":"failed"})})
+};
+
+Job.prototype.complete = function(output = {}){
+  return fetch(`${this.queue.client_url}job/${this.id}`, {method: "PATCH", body: JSON.stringify({"status":"completed",output})})
+};
+
 //It will loop through each of the states until it's returned otherwise returns onknown
 Job.prototype.getState = function() {
  
@@ -86,9 +103,6 @@ Job.prototype.getState = function() {
   }, Promise.resolve([]));
 };
 
-Job.prototype.remove = function(){
-  console.log("to be implemented");
-};
 
 //queued - set by the server when a job is first created and added to a queue
 //running - set by the server when a worker picks up a job
