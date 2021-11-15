@@ -13,6 +13,20 @@
   </div>
 </div>
 
+<h3>Statistics</h3>
+<div class="row">
+  <div class="col-sm-4 no-padding">
+    <table class="table">
+        {{#each info.statistics}}
+        <tr>
+          <th>{{ @key }}</th>
+          <th>{{ this }}</th>
+        </tr>
+        {{/each}}
+    </table>
+  </div>
+</div>
+
 {{#contentFor 'sidebar'}}
   <li class="active"><a href="#">Queues Overview</a></li>
 {{/contentFor}}

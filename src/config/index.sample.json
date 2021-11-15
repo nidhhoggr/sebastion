@@ -1,4 +1,8 @@
 {
+  "client": {
+    "host": "localhost",
+    "port": "8023"
+  },
   "queues": [
     {
       "name": "Queue A",

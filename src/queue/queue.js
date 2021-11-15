@@ -1,22 +1,15 @@
-'use strict';
+const  redis = require('ioredis');
+const  _ = require('lodash');
+const  util = require('util');
+const url = require('url');
+const Job = require('./job');
+const semver = require('semver');
+const debuglog = require('debuglog')('jimmy');
+const uuid = require('uuid');
 
-var redis = require('ioredis');
+const MINIMUM_REDIS_VERSION = '2.8.18';
 
-var _ = require('lodash');
-
-var util = require('util');
-var url = require('url');
-var Job = require('./job');
-
-var semver = require('semver');
-var debuglog = require('debuglog')('jimmy');
-var uuid = require('uuid');
-
-
-var MINIMUM_REDIS_VERSION = '2.8.18';
-
-var Queue = function Queue(name, url, opts){
-  var _this = this;
+const Queue = function Queue(name, url, opts){
   if(!(this instanceof Queue)){
     return new Queue(name, url, opts);
   }
@@ -87,12 +80,11 @@ var Queue = function Queue(name, url, opts){
     }
   });
 
-  console.log(opts);
   if (opts.skipVersionCheck !== true) {
     console.log("calling getRedisVersion");
-    getRedisVersion(this.client).then(function(version){
+    getRedisVersion(this.client).then((version) => {
       if (semver.lt(version, MINIMUM_REDIS_VERSION)){
-        _this.emit('error', new Error('Redis version needs to be greater than ' + MINIMUM_REDIS_VERSION + '. Current: ' + version));
+        this.emit('error', new Error('Redis version needs to be greater than ' + MINIMUM_REDIS_VERSION + '. Current: ' + version));
       }
     }).catch(function(/*err*/){
       // Ignore this error.
@@ -102,14 +94,14 @@ var Queue = function Queue(name, url, opts){
   this.handlers = {};
 
   this.settings = opts.settings;
-
-  var keys = {};
+  this.keys = {};
+  
   _.each([
     '',
-    'jobs'], function(key){
-    keys[key] = _this.toKey(key);
+    'jobs'
+  ], (key) => {
+    this.keys[key] = this.toKey(key);
   });
-  this.keys = keys;
 };
 
 function redisClientGetter(queue, options, initCallback) {
@@ -144,17 +136,10 @@ function redisOptsFromUrl(urlString){
   return redisOpts;
 }
 
-//
-// Extend Queue with "aspects"
-//
 require('./getters')(Queue);
 
-
 Queue.prototype.isReady = function(){
-  var _this = this;
-  return this._initializing.then(function(){
-    return _this;
-  });
+  return this._initializing.then(() => this);
 };
 
 Queue.prototype.disconnect = function(){

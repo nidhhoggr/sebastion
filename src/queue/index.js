@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const Jimmy = require('./queue');
 const path = require('path');
+const fetch = require('node-fetch');
+const debuglog = require('debuglog')('jimmy');
 
 class Queues {
   constructor(config) {
@@ -42,6 +44,21 @@ class Queues {
     this._queues[queueHost][queueName] = queue;
 
     return queue;
+  }
+
+  client_url(path) {
+    const {host, port} = this._config.client;
+    return `http://${host}:${port}/${path}`;
+  }
+
+  info() {
+    const url = this.client_url("info");
+    debuglog(`fetching from ${url}`);
+    return fetch(url)
+      .then(async (resp) => {
+        const json = await resp.json();
+        return json;
+      });
   }
 }
 
