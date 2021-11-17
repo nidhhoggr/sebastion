@@ -4,7 +4,7 @@
 
 <h5>Actions</h5>
 
-{{#includes "failed timedout cancelled" jobState }}
+{{#includes "failed timed_out cancelled" jobState }}
   <button class="btn btn-success js-retry-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}">
     Retry
   </button>
