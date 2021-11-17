@@ -3,15 +3,29 @@
 {{/unless}}
 
 <h5>Actions</h5>
-<button class="btn btn-danger js-remove-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}" data-job-state="{{ jobState }}">
-  Remove
-</button>
 
-{{#includes "failed timedout" jobState }}
+{{#includes "failed timedout cancelled" jobState }}
   <button class="btn btn-success js-retry-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}">
     Retry
   </button>
 {{/includes}}
+
+
+{{#includes "running" jobState }}
+  <button class="btn btn-danger js-fail-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}">
+    Fail
+  </button>
+{{/includes}}
+
+{{#includes "running `queued failed" jobState }}
+  <button class="btn btn-danger js-cancel-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}">
+    Cancel
+  </button>
+{{/includes}}
+
+<button class="btn btn-danger js-remove-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}">
+  Remove
+</button>
 
 <div class="row">
   <div class="col-sm-3">

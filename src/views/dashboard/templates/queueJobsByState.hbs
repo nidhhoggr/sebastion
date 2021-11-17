@@ -94,7 +94,7 @@
               <h4 class="header-collapse">{{this.id }}</h4>
             </a>
             <div id="collapse{{encodeIdAttr this.id}}" class="collapse">
-              {{> dashboard/jobDetails this basePath=../basePath displayJobInline=true queueName=../queueName queueHost=../queueHost jobState=../state }}
+              {{> dashboard/jobDetails this basePath=../basePath displayJobInline=true queueName=../queueName queueHost=../queueHost jobState=this.status }}
             </div>
           </li>
         {{/each}}

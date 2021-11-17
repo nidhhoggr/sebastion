@@ -5,30 +5,32 @@ $(document).ready(() => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  // Set up individual "retry job" handler
-  $('.js-retry-job').on('click', function(e) {
-    e.preventDefault();
-    $(this).prop('disabled', true);
+  function basePatch(op) {
+    $(`.js-${op}-job`).on('click', function(e) {
+      e.preventDefault();
+      $(this).prop('disabled', true);
 
-    const jobId = $(this).data('job-id');
-    const queueName = $(this).data('queue-name');
-    const queueHost = $(this).data('queue-host');
+      const jobId = $(this).data('job-id');
+      const queueName = $(this).data('queue-name');
+      const queueHost = $(this).data('queue-host');
 
-    const r = window.confirm(`Retry job #${jobId} in queue "${queueHost}/${queueName}"?`);
-    if (r) {
-      $.ajax({
-        method: 'PATCH',
-        url: `${basePath}/api/queue/${encodeURIComponent(queueHost)}/${encodeURIComponent(queueName)}/job/${encodeURIComponent(jobId)}`
-      }).done(() => {
-        window.location.reload();
-      }).fail((jqXHR) => {
-        window.alert(`Request failed, check console for error.`);
-        console.error(jqXHR.responseText);
-      });
-    } else {
-      $(this).prop('disabled', false);
-    }
-  });
+      const r = window.confirm(`${op} job #${jobId} in queue "${queueHost}/${queueName}"?`);
+      if (r) {
+        $.ajax({
+          method: 'PATCH',
+          url: `${basePath}/api/queue/${encodeURIComponent(queueHost)}/${encodeURIComponent(queueName)}/job/${encodeURIComponent(jobId)}/${op}`
+        }).done(() => {
+          window.location.reload();
+        }).fail((jqXHR) => {
+          window.alert(`Request failed, check console for error.`);
+          console.error(jqXHR.responseText);
+        });
+      } else {
+        $(this).prop('disabled', false);
+      }
+    });
+  }
+  ["retry","fail","cancel","complete"].forEach(basePatch); 
 
   // Set up individual "remove job" handler
   $('.js-remove-job').on('click', function(e) {

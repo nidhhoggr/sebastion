@@ -67,17 +67,46 @@ Job.prototype.remove = function(){
   return fetch(`${this.queue.client_url}job/${this.id}`, {method: "DELETE"})
 };
 
-
 Job.prototype.cancel = function(){
-  return fetch(`${this.queue.client_url}job/${this.id}`, {method: "PATCH", body: JSON.stringify({"status":"cancelled"})})
+  return fetch(`${this.queue.client_url}job/${this.id}`, {
+    method: "PATCH", 
+    body: JSON.stringify({"status":"cancelled"}),
+    headers: {'Content-Type': 'application/json'}
+  })
+  .then(async (resp) => {
+    if (resp.ok) {
+      const json = await resp.text();
+      return json;
+    }
+  });
 };
 
 Job.prototype.fail = function(){
-  return fetch(`${this.queue.client_url}job/${this.id}`, {method: "PATCH", body: JSON.stringify({"status":"failed"})})
+  return fetch(`${this.queue.client_url}job/${this.id}`, {
+    method: "PATCH", 
+    body: JSON.stringify({"status":"failed"}),
+    headers: {'Content-Type': 'application/json'}
+  })
+  .then(async (resp) => {
+    if (resp.ok) {
+      const json = await resp.text();
+      return json;
+    }
+  });
 };
 
 Job.prototype.complete = function(output = {}){
-  return fetch(`${this.queue.client_url}job/${this.id}`, {method: "PATCH", body: JSON.stringify({"status":"completed",output})})
+  return fetch(`${this.queue.client_url}job/${this.id}`, {
+    method: "PATCH", 
+    body: JSON.stringify({"status":"completed",output}),
+    headers: {'Content-Type': 'application/json'}
+  })
+  .then(async (resp) => {
+    if (resp.ok) {
+      const json = await resp.text();
+      return json;
+    }
+  });
 };
 
 //It will loop through each of the states until it's returned otherwise returns onknown
