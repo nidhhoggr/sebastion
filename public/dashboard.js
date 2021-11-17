@@ -58,6 +58,31 @@ $(document).ready(() => {
     }
   });
 
+  $(`.js-fetch-job`).on('click', function(e) {
+    e.preventDefault();
+    $(this).prop('disabled', true);
+
+    const jobId = $(this).data('job-id');
+    const queueName = $(this).data('queue-name');
+    const queueHost = $(this).data('queue-host');
+
+    const r = window.confirm(`fetch job #${jobId} in queue "${queueHost}/${queueName}"?`);
+    if (r) {
+      $.ajax({
+        method: 'GET',
+        url: `${basePath}/api/queue/${encodeURIComponent(queueHost)}/${encodeURIComponent(queueName)}/job/${encodeURIComponent(jobId)}/fetch`
+      }).done(() => {
+        window.location.reload();
+      }).fail((jqXHR) => {
+        window.alert(`Request failed, check console for error.`);
+        console.error(jqXHR.responseText);
+      });
+    } else {
+      $(this).prop('disabled', false);
+    }
+  });
+
+
   // Set up "select all jobs" button handler
   $('.js-select-all-jobs').change(function() {
     const $jobBulkCheckboxes = $('.js-bulk-job');

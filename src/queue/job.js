@@ -63,6 +63,14 @@ Job.prototype.retry = function(){
     });
 };
 
+Job.prototype.fetch = function(){
+  return fetch(`${this.queue.client_url}queue/${this.queue.name}/job/${this.id}`, {method: "GET"})
+    .then(async (resp) => {
+      const json = await resp.json();
+      return json;
+    });
+};
+
 Job.prototype.remove = function(){
   return fetch(`${this.queue.client_url}job/${this.id}`, {method: "DELETE"})
 };

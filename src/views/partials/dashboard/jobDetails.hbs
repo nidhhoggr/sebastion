@@ -4,6 +4,12 @@
 
 <h5>Actions</h5>
 
+{{#includes "queued" jobState }}
+  <button class="btn btn-success js-fetch-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}">
+    Fetch
+  </button>
+{{/includes}}
+
 {{#includes "failed timed_out cancelled" jobState }}
   <button class="btn btn-success js-retry-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}">
     Retry
@@ -17,7 +23,7 @@
   </button>
 {{/includes}}
 
-{{#includes "running `queued failed" jobState }}
+{{#includes "running queued failed" jobState }}
   <button class="btn btn-danger js-cancel-job" data-queue-host="{{ queueHost }}" data-queue-name="{{ queueName }}" data-job-id="{{ this.id }}">
     Cancel
   </button>
