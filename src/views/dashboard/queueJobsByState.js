@@ -21,8 +21,8 @@ async function handler(req, res) {
   const endId = startId + pageSize - 1;
 
   let jobs = await queue[`get${_.capitalize(state)}`](startId, endId);
-
-  jobs = jobs.filter(Number);
+  
+  jobs = jobs.filter(j => j !== undefined);
 
   let pages = _.range(page - 6, page + 7)
     .filter((page) => page >= 1);
