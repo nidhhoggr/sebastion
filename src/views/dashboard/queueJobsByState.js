@@ -22,6 +22,8 @@ async function handler(req, res) {
 
   let jobs = await queue[`get${_.capitalize(state)}`](startId, endId);
 
+  jobs = jobs.filter(Number);
+
   let pages = _.range(page - 6, page + 7)
     .filter((page) => page >= 1);
   while (pages.length < 12) {
